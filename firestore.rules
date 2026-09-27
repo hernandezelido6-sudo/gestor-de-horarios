@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128;
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidAvailability(data) {
+      return data.keys().hasAll(['id', 'name', 'slots', 'timestamp']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 128 &&
+             data.slots is list && data.slots.size() <= 100 &&
+             data.timestamp is timestamp;
+    }
+    
+    match /availabilities/{availabilityId} {
+      allow read: if true;
+      allow create: if isValidId(availabilityId) && isValidAvailability(incoming());
+      allow update: if isValidAvailability(incoming());
+      allow delete: if true;
+    }
+
+    function isValidClass(data) {
+      return data.keys().hasAll(['id', 'subject', 'teacher', 'room', 'day', 'hour']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.subject is string && data.subject.size() <= 128 &&
+             data.teacher is string && data.teacher.size() <= 128 &&
+             data.room is string && data.room.size() <= 128 &&
+             data.day is string && data.day.size() <= 128 &&
+             data.hour is string && data.hour.size() <= 128 &&
+             (!data.keys().hasAll(['sector']) || (data.sector is string && data.sector.size() <= 128)) &&
+             (!data.keys().hasAll(['group']) || (data.group is string && data.group.size() <= 128));
+    }
+
+    match /classes/{classId} {
+      allow read: if true;
+      allow create: if isValidId(classId) && isValidClass(incoming());
+      allow update: if isValidClass(incoming());
+      allow delete: if true;
+    }
+    
+    function isValidMessage(data) {
+      return data.keys().hasAll(['id', 'sender', 'content', 'timestamp']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.sender is string && data.sender.size() <= 128 &&
+             data.content is string && data.content.size() <= 1024 &&
+             data.timestamp is timestamp;
+    }
+
+    match /messages/{messageId} {
+      allow read: if true;
+      allow create: if isValidId(messageId) && isValidMessage(incoming());
+      allow update: if isValidMessage(incoming());
+      allow delete: if true;
+    }
+    
+    function isValidSettings(data) {
+       return (!data.keys().hasAll(['hours']) || data.hours is list) &&
+              (!data.keys().hasAll(['recesses']) || data.recesses is list) &&
+              (!data.keys().hasAll(['hoursPreparatory']) || data.hoursPreparatory is list) &&
+              (!data.keys().hasAll(['recessesPreparatory']) || data.recessesPreparatory is list) &&
+              (!data.keys().hasAll(['hoursSecondary']) || data.hoursSecondary is list) &&
+              (!data.keys().hasAll(['recessesSecondary']) || data.recessesSecondary is list);
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow create: if isValidId(settingId) && isValidSettings(incoming());
+      allow update: if isValidSettings(incoming());
+      allow delete: if true;
+    }
+
+    match /test/{testId} {
+      allow read: if true;
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Juan Pablo II",
+  "description": "Generador de horarios versión 1.00",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

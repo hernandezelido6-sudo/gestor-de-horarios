@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "TeacherAvailability": {
+      "title": "TeacherAvailability",
+      "description": "Availability for a teacher",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "subject": { "type": "string" },
+        "subjects": { "type": "array" },
+        "slots": { "type": "array" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "slots", "timestamp"]
+    },
+    "ClassData": {
+      "title": "ClassData",
+      "description": "A scheduled class block",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "subject": { "type": "string" },
+        "teacher": { "type": "string" },
+        "room": { "type": "string" },
+        "day": { "type": "string" },
+        "hour": { "type": "string" },
+        "sector": { "type": "string" },
+        "group": { "type": "string" }
+      },
+      "required": ["id", "subject", "teacher", "room", "day", "hour", "sector", "group"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Community message",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sender": { "type": "string" },
+        "content": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "isOfficial": { "type": "boolean" }
+      },
+      "required": ["id", "sender", "content", "timestamp"]
+    },
+    "SystemSettings": {
+      "title": "SystemSettings",
+      "description": "Global settings",
+      "type": "object",
+      "properties": {
+        "hours": { "type": "array" }
+      },
+      "required": ["hours"]
+    }
+  },
+  "firestore": {
+    "availabilities/{availabilityId}": {
+      "schema": "TeacherAvailability",
+      "description": "Store teacher availability"
+    },
+    "classes/{classId}": {
+      "schema": "ClassData",
+      "description": "Store schedule classes"
+    },
+    "messages/{messageId}": {
+      "schema": "Message",
+      "description": "Store community messages"
+    },
+    "settings/{settingId}": {
+      "schema": "SystemSettings",
+      "description": "Store system settings like hours"
+    }
+  }
+}
